@@ -7,8 +7,4 @@ RUN cd /app/repo/AnalyticsLogger && swift build -c release
 RUN cp /app/repo/AnalyticsLogger/.build/release/AnalyticsLogger /app
 RUN mv /etc/nginx/sites-available/default /etc/nginx/sites-available/default.backup
 RUN cp /app/repo/AnalyticsLogger/nginx.conf /etc/nginx/sites-available/default
-RUN nginx
-RUN /app/AnalyticsLogger {IP} > log.txt 2>&1 &
-
-
 EXPOSE 80
