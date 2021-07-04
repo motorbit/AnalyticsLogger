@@ -11,7 +11,7 @@ class FileProvider {
     
     static let shared = FileProvider()
     let folderURL = makeFolderURL()
-    
+    private static let fm = FileManager.default
     func save(model: Model) {
         let fileURL = folderURL.appendingPathComponent("\(model.eventName!)_\(FileProvider.makeTimeStamp()).png")
         do {
@@ -25,9 +25,9 @@ class FileProvider {
     static func makeFolderURL() -> URL {
         var folderURL = URL(fileURLWithPath: CommandLine.arguments.first!)
         folderURL.deleteLastPathComponent()
-        folderURL = folderURL.appendingPathComponent("Output")
+        folderURL = makeOutput(folderURL)
         folderURL = folderURL.appendingPathComponent(makeFolderName())
-        if !FileManager.default.fileExists(atPath: folderURL.absoluteString) {
+        if !fm.directoryExists(atUrl: folderURL) {
             do {
                 try FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: false, attributes: nil)
                 let url = folderURL.appendingPathComponent("index.html")
@@ -37,6 +37,17 @@ class FileProvider {
             }
         }
         return folderURL
+    }
+    
+    
+    
+    private static func makeOutput(_ path: URL) -> URL {
+        var url = path
+        url = url.appendingPathComponent("Output")
+        if !fm.directoryExists(atUrl: url) {
+            try? fm.createDirectory(at: url, withIntermediateDirectories: false, attributes: nil)
+        }
+        return url
     }
     
     func addModelToCSV(_ model: Model, fileURL: URL) {

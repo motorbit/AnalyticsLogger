@@ -18,7 +18,7 @@ final class LogProvider {
     }
     
     private func saveToFile(_ text: String) {
-        let url = folderURL.appendingPathComponent("one.log")
+        let url = folderURL.appendingPathComponent("AnalyticsLogger.log")
         try? "[\(timeStamp)] \(text)".appendLineToURL(fileURL: url)
     }
     
