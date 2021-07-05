@@ -10,12 +10,12 @@ import Foundation
 class FileProvider {
     
     static let shared = FileProvider()
-    let folderURL = makeFolderURL()
-    private static let fm = FileManager.default
+    private let fm = FileManager.default
     
-    func save(model: Model) {
+    func save(clientID: String, model: Model) {
         var model = model
-        let fileURL = folderURL.appendingPathComponent("\(model.eventName!)_\(FileProvider.makeTimeStamp()).png")
+        let folderURL = makeFolderURL(clientId: clientID)
+        let fileURL = folderURL.appendingPathComponent("\(model.eventName!)_\(makeTimeStamp()).png")
         do {
             if let data = model.image {
                 try data.write(to: fileURL)
@@ -36,22 +36,15 @@ class FileProvider {
         }
     }
     
-    static func makeFolderURL() -> URL {
+    func makeFolderURL(clientId: String) -> URL {
         var folderURL = URL(fileURLWithPath: CommandLine.arguments.first!)
         folderURL.deleteLastPathComponent()
         folderURL = makeOutput(folderURL)
-        folderURL = folderURL.appendingPathComponent(makeTimeStamp())
-        if !fm.directoryExists(atUrl: folderURL) {
-            do {
-                try FileManager.default.createDirectory(at: folderURL, withIntermediateDirectories: false, attributes: nil)
-            } catch {
-                LogProvider.shared.log(error.localizedDescription)
-            }
-        }
+        folderURL = makeClientFolder(folderURL, clientId: clientId)
         return folderURL
     }
     
-    private static func makeOutput(_ path: URL) -> URL {
+    func makeOutput(_ path: URL) -> URL {
         var url = path
         url = url.appendingPathComponent("Output")
         if !fm.directoryExists(atUrl: url) {
@@ -60,7 +53,16 @@ class FileProvider {
         return url
     }
     
-    static func makeTimeStamp() -> String {
+    func makeClientFolder(_ path: URL, clientId: String) -> URL {
+        var url = path
+        url = url.appendingPathComponent(clientId)
+        if !fm.directoryExists(atUrl: url) {
+            try? fm.createDirectory(at: url, withIntermediateDirectories: false, attributes: nil)
+        }
+        return url
+    }
+    
+    func makeTimeStamp() -> String {
         let formatter = DateFormatter()
         formatter.dateFormat = "dd_MM_YYY_hh_mm"
         return formatter.string(from: Date())

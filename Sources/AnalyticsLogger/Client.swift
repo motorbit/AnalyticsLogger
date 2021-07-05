@@ -41,7 +41,11 @@ class Client {
                   let model = try? JSONDecoder().decode(Model.self, from: Data(str.utf8))
             else { return }
             LogProvider.shared.log("Received: \(model)")
-            FileProvider.shared.save(model: model)
+            var client = "undefined"
+            if let clientId = message.topic.split(separator: "/").last {
+                client = String(clientId)
+            }
+            FileProvider.shared.save(clientID: client, model: model)
         }
         mqtt.connect()
     }
