@@ -49,7 +49,8 @@ class Client {
 
 
 struct Model: Codable {
-    let image: Data
+    var image: Data?
     let props: String?
     let eventName: String?
+    var imagePath: String?
 }
